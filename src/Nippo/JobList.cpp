@@ -5,10 +5,27 @@ JobList::JobList(){
 }
 
 void JobList::onStart(){
+    weeks.push_back("日");
+    weeks.push_back("月");
+    weeks.push_back("火");
+    weeks.push_back("水");
+    weeks.push_back("木");
+    weeks.push_back("金");
+    weeks.push_back("土");
     
+    setWidth(ofGetWidth());
+    setHeight(ofGetHeight());
 }
 
 void JobList::onDraw() {
+    // 今日の日付
+    stringstream daystr;
+    string week = weeks[ofGetWeekday()];
+    daystr << year << "年 " << month << "月 " << date << "日 (" << week << ")";
+    auto daystrrect = Job::font.getStringBoundingBox(daystr.str(), 0, 0);
+    ofSetColor(100);
+    Job::font.drawString(daystr.str(), (getWidth() - daystrrect.width) / 2, 4 + daystrrect.height);
+    
     bool debug = false;
     if (debug) {
         ofPushMatrix();
@@ -58,7 +75,7 @@ void JobList::showNewJobDialog() {
 }
 
 void JobList::updateJobPositions() {
-    ofVec2f jobPos(10, 30);
+    ofVec2f jobPos(10, 50);
     for (auto j : jobs) {
         j->setPos(jobPos);
         jobPos.y += j->getHeight();

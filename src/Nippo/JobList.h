@@ -26,4 +26,7 @@ public:
     string toPath(string dir, int year);
     
     vector<shared_ptr<Job> > jobs;
+    
+private:
+    vector<string> weeks;
 };

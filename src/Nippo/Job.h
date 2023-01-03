@@ -24,8 +24,8 @@ public:
     // サイズ変更の通知をするためのイベント
     ofEvent<void> sizeChangedEvents;
     
-private:
     static ofTrueTypeFont font, memoFont;
+private:
     static bool fontLoaded;
     static void loadFont();
     shared_ptr<Counter> counter;

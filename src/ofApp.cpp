@@ -8,7 +8,7 @@ void ofApp::setup(){
     componentManager->setup();
     
     ofSetFrameRate(30);
-    ofSetBackgroundColor(255);
+    ofSetBackgroundColor(220);
     ofSetWindowTitle("Nippo");
     
     ofxFpsAutoReducer::setup(false);
