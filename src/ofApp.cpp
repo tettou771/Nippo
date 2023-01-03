@@ -10,6 +10,11 @@ void ofApp::setup(){
     ofSetFrameRate(30);
     ofSetBackgroundColor(255);
     ofSetWindowTitle("Nippo");
+    
+    ofxFpsAutoReducer::setup(false);
+    ofxFpsAutoReducer::setNormalFps(60);
+    ofxFpsAutoReducer::addSleepSetting(ofxFpsAutoReducer::SleepSetting(0.5, 10));
+    ofxFpsAutoReducer::addSleepSetting(ofxFpsAutoReducer::SleepSetting(10, 2));
 }
 
 //--------------------------------------------------------------
@@ -19,7 +24,8 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    // show fps
+    //ofDrawBitmapStringHighlight(ofToString(ofGetFrameRate(), 0), 20, 20);
 }
 
 //--------------------------------------------------------------

@@ -1,3 +1,4 @@
 ofxComponent
 ofxComponentUI
 ofxCsv
+ofxFpsAutoReducer

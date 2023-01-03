@@ -2,6 +2,8 @@
 
 #include "ofMain.h"
 #include "ofxComponentUI.h"
+#include "ofxFpsAutoReducer.h"
+
 using namespace ofxComponent;
 
 class ofApp : public ofBaseApp{
