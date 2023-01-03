@@ -1,5 +1,5 @@
 #include "Job.h"
-ofTrueTypeFont Job::font;
+ofTrueTypeFont Job::font, Job::memoFont;
 bool Job::fontLoaded = false;
 
 Job::Job(string name){
@@ -12,6 +12,9 @@ Job::Job(string name){
 }
 
 void Job::onStart() {
+    setWidth(450);
+    setHeight(Counter::counterHeight);
+    
     counter = make_shared<Counter>(&deciHours);
     counter->setPos(300, 0);
     addChild(counter);
@@ -24,15 +27,32 @@ void Job::onStart() {
     up->setPos(360, (getHeight() - down->getHeight())/2);
     addChild(up);
 
+    // memo button (hidden, show on hover)
+    memoButton = make_shared<MemoButton>();
+    memoButton->setWidth(230);
+    memoButton->setHeight(getHeight());
+    ofAddListener(memoButton->clickedEvents, this, &Job::showMemoDialog);
+    addChild(memoButton);
+    
+    updateHeight();
 }
 
 void Job::onDraw() {
     ofSetColor(50);
-    font.drawString(name, 0, (getHeight() + font.getSize()) / 2);
+    font.drawString(name, 0, (Counter::counterHeight + font.getSize()) / 2);
+    
+    // メモ
+    float margin = 2;
+    memoFont.drawString(memo, 0, Counter::counterHeight + memoFont.getSize() + margin);
 }
 
 void Job::addCount(int dh) {
     deciHours += dh;
+}
+
+void Job::addMemo(string m) {
+    if (memo != "") memo += '\n';
+    memo += m;
 }
 
 void Job::loadFont() {
@@ -47,5 +67,35 @@ void Job::loadFont() {
     settings.addRanges(ofAlphabet::Latin);
     settings.addRanges(ofAlphabet::Japanese);
     font.load(settings);
+    
+    // メモ用のフォント 小さくしてロードする
+    settings.fontSize = 10;
+    memoFont.load(settings);
+    
     fontLoaded = true;
+}
+
+void Job::updateHeight() {
+    if (memo == "") {
+        setHeight(Counter::counterHeight);
+    }
+    else {
+        // メモの文字数に合わせて高さを変える
+        auto rect = memoFont.getStringBoundingBox(memo, 0, 0);
+        setHeight(Counter::counterHeight + 10 + rect.height);
+    }
+    
+    // Jobの位置の再計算リクエスト
+    ofNotifyEvent(sizeChangedEvents);
+}
+
+void Job::showMemoDialog() {
+    auto result = ofSystemTextBoxDialog("メモを入力してください");
+    if (result.length() > 1) {
+        // メモを追加する
+        if (memo != "") memo += '\n';
+        memo += result;
+        
+        updateHeight();
+    }
 }

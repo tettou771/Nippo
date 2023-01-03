@@ -1,6 +1,7 @@
 #pragma once
 #include "ofxComponentUI.h"
 #include "Counter.h"
+#include "MemoButton.h"
 using namespace ofxComponent;
 
 class Job : public ofxComponentBase {
@@ -17,11 +18,22 @@ public:
     int deciHours;
     void addCount(int dh);
     float getHours() {return deciHours * 0.1;} // hoursの値を得る
+    void addMemo(string m);
+    string getMemo() { return memo; }
     
-    static void loadFont();
+    // サイズ変更の通知をするためのイベント
+    ofEvent<void> sizeChangedEvents;
     
 private:
-    static ofTrueTypeFont font;
+    static ofTrueTypeFont font, memoFont;
     static bool fontLoaded;
+    static void loadFont();
     shared_ptr<Counter> counter;
+    
+    string memo;
+    shared_ptr<MemoButton> memoButton;
+    
+    void updateHeight();
+    
+    void showMemoDialog();
 };

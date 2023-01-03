@@ -13,7 +13,7 @@ public:
     void onDraw() override;
     void onKeyPressed(ofKeyEventArgs &key) override;
 
-    void addNewJobDialog();
+    void showNewJobDialog();
     void updateJobPositions();
     void load(string dir, int year, int month, int date);
     void save();

@@ -30,7 +30,7 @@ void JobList::onDraw() {
 
 void JobList::onKeyPressed(ofKeyEventArgs &key) {
     if (key.key == OF_KEY_RETURN) {
-        addNewJobDialog();
+        showNewJobDialog();
     }
 }
 
@@ -43,11 +43,12 @@ string JobList::toPath(string dir, int year) {
     return path.str();
 }
 
-void JobList::addNewJobDialog() {
+void JobList::showNewJobDialog() {
     auto result = ofSystemTextBoxDialog("新しいジョブの名前を入力してください");
     if (result.length() > 1) {
         // ジョブを追加する
         auto newJob = make_shared<Job>(result);
+        ofAddListener(newJob->sizeChangedEvents, this, &JobList::updateJobPositions);
         jobs.insert(jobs.begin(), newJob);
         updateJobPositions();
         addChild(newJob);
@@ -60,7 +61,7 @@ void JobList::updateJobPositions() {
     ofVec2f jobPos(10, 30);
     for (auto j : jobs) {
         j->setPos(jobPos);
-        jobPos.y += Counter::counterHeight;
+        jobPos.y += j->getHeight();
     }
 }
 
@@ -107,15 +108,19 @@ void JobList::load(string dir, int year, int month, int date) {
         // ただし、内部的にはdeciHoursの単位なので、10倍して加算しなければならない
         int jobDeciHours = round(row.getFloat(2) * 10);
         
+        // 4列目がメモ欄
+        string jobMemo = row.getString(3);
+        
         // すでにジョブリストにあるかどうか確認
         bool jobExists = false;
         for (auto j : jobs) {
             if (j->name == jobName) {
                 jobExists = true;
                 // 今日なら
-                // そのジョブにdeciHoursを加算
+                // そのジョブにdeciHoursを加算,メモ追加
                 if (isToday) {
                     j->addCount(jobDeciHours);
+                    j->addMemo(jobMemo);
                 }
                 
                 break;
@@ -125,8 +130,14 @@ void JobList::load(string dir, int year, int month, int date) {
         // なければジョブを追加
         if (!jobExists) {
             shared_ptr<Job> newJob = make_shared<Job>(jobName);
-            // 今日ならそのジョブにdeciHoursを加算
-            if (isToday) newJob->addCount(jobDeciHours);
+            
+            ofAddListener(newJob->sizeChangedEvents, this, &JobList::updateJobPositions);
+            
+            // 今日ならそのジョブにdeciHoursを加算,メモ追加
+            if (isToday) {
+                newJob->addCount(jobDeciHours);
+                newJob->addMemo(jobMemo);
+            }
             
             addChild(newJob);
             jobs.push_back(newJob);
@@ -195,6 +206,9 @@ void JobList::save() {
         // ただし、内部的にはdeciHoursの単位なので、10分の1して加算しなければならない
         
         row.setFloat(2, job->getHours());
+        
+        // 4列目が目も
+        row.setString(3, job->getMemo());
     }
     
     // もしtoSaveJobsに残っているjobがあったら、新規ジョブとして追加
