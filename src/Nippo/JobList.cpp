@@ -224,14 +224,14 @@ void JobList::save() {
         
         row.setFloat(2, job->getHours());
         
-        // 4列目が目も
+        // 4列目がmemo
         row.setString(3, job->getMemo());
     }
     
     // もしtoSaveJobsに残っているjobがあったら、新規ジョブとして追加
     for (auto j : toSaveJobs) {
-        // ただし0時間のものは無視
-        if (j->deciHours == 0) continue;
+        // ただし0時間かつmemoがないものは無視
+        if (j->deciHours == 0 && j->getMemo() == "") continue;
         
         ofxCsvRow newRow;
         string todayString = ofToString(ofGetYear(), 4, '0')
