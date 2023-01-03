@@ -1,0 +1,17 @@
+settings.json
+
+.vs
+obj
+*.sln
+*.vcxproj*
+bin/*
+!bin/data
+log
+addons
+
+# Xcode
+Makefile
+config.make
+*.xcconfig
+*.xcodeproj
+*.plist
