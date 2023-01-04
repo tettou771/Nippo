@@ -22,7 +22,7 @@ public:
     string getMemo() { return memo; }
     
     // サイズ変更の通知をするためのイベント
-    ofEvent<void> sizeChangedEvents;
+    ofEvent<void> memoChangedEvents;
     
     static ofTrueTypeFont font, memoFont;
 private:

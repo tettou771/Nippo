@@ -14,6 +14,8 @@ public:
     void onKeyPressed(ofKeyEventArgs &key) override;
 
     void showNewJobDialog();
+    void hoursChanged();
+    void memoChanged();
     void updateJobPositions();
     void load(string dir, int year, int month, int date);
     void save();

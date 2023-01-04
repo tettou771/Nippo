@@ -65,13 +65,23 @@ void JobList::showNewJobDialog() {
     if (result.length() > 1) {
         // ジョブを追加する
         auto newJob = make_shared<Job>(result);
-        ofAddListener(newJob->sizeChangedEvents, this, &JobList::updateJobPositions);
+        ofAddListener(newJob->memoChangedEvents, this, &JobList::memoChanged);
         jobs.insert(jobs.begin(), newJob);
         updateJobPositions();
         addChild(newJob);
     }
     
     string newJobName = "";
+}
+
+void JobList::hoursChanged() {
+    save();
+}
+
+void JobList::memoChanged() {
+    updateJobPositions();
+    // メモが書き変わったので保存
+    save();
 }
 
 void JobList::updateJobPositions() {
@@ -147,8 +157,7 @@ void JobList::load(string dir, int year, int month, int date) {
         // なければジョブを追加
         if (!jobExists) {
             shared_ptr<Job> newJob = make_shared<Job>(jobName);
-            
-            ofAddListener(newJob->sizeChangedEvents, this, &JobList::updateJobPositions);
+            ofAddListener(newJob->memoChangedEvents, this, &JobList::memoChanged);
             
             // 今日ならそのジョブにdeciHoursを加算,メモ追加
             if (isToday) {

@@ -3,6 +3,11 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+#ifdef TARGET_OS_MAC
+    // パッケージ化した時に必要
+    ofSetDataPathRoot("../Resources/data");
+#endif
+    
     componentManager = make_shared<ofxComponentManager>();
     componentManager->addChild(make_shared<Nippo>());
     componentManager->setup();

@@ -86,7 +86,7 @@ void Job::updateHeight() {
     }
     
     // Jobの位置の再計算リクエスト
-    ofNotifyEvent(sizeChangedEvents);
+    ofNotifyEvent(memoChangedEvents);
 }
 
 void Job::showMemoDialog() {
