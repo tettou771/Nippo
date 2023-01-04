@@ -11,13 +11,14 @@ void Nippo::onStart() {
     // 設定ファイルが正常に読まれたとき
     if (loadSettings()) {
     }
-    // ファイルがないとき
+    // ファイルがないとき、ダイアログでフォルダ指定してもらう
     else{
         bool canceled = showFolderDialog();
         if (!canceled) {
             // キャンセルならアプリを終了する
             OF_EXIT_APP(1);
         }
+        // フォルダ指定されたら、そのディレクトリで実行
     }
     
     jobList->load(directory, ofGetYear(), ofGetMonth(), ofGetDay());
@@ -64,13 +65,13 @@ bool Nippo::showFolderDialog() {
         }
         
         else {
-            // フォルダを詮索されていなかったら再度選択してもらう
+            // フォルダを選択されていなかったら再度選択してもらう
             valid = false;
             ofSystemAlertDialog("ジョブデータのフォルダが選択されていません");
         }
     } while (!valid);
     
-    // 成功して終了
+    // 成功して終了（キャンセルは早期returnされている）
     return true;
 }
 

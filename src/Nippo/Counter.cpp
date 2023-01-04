@@ -59,11 +59,11 @@ void Counter::onStart() {
 }
 
 void Counter::onDraw() {
-    ofNoFill();
-    ofDrawRectangle(0, 0, getWidth(), getHeight());
-    
+    // ホバー中は色を変える
     if (isMouseInside() || isDragging) ofSetColor(120);
     else ofSetColor(50);
+    
+    // 時間の数値を書く
     string txt = ofToString(float(*deciHoursPtr) / 10, 1);
     font.drawString(txt, 0, (getHeight() + font.getSize()) / 2);
 }

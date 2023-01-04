@@ -33,6 +33,6 @@ public:
     static ofTrueTypeFont font;
     static bool fontLoaded;
     static void loadFont();
-    static const int counterWidth = 60;
+    static const int counterWidth = 50;
     static const int counterHeight = 35;
 };

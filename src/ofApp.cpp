@@ -5,7 +5,11 @@
 void ofApp::setup(){
 #ifdef TARGET_OS_MAC
     // パッケージ化した時に必要
-    ofSetDataPathRoot("../Resources/data");
+    
+    string rootPath = "../Resources/data";
+    
+    ofLogNotice("ofApp") << "rootPath: " << rootPath;
+    ofSetDataPathRoot(rootPath);
 #endif
     
     componentManager = make_shared<ofxComponentManager>();
