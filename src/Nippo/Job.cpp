@@ -1,35 +1,23 @@
 #include "Job.h"
-ofTrueTypeFont Job::font, Job::memoFont;
-bool Job::fontLoaded = false;
 
 Job::Job(string name){
-    loadFont();
-    
     this->name = name;
     deciHours = 0;
-    
-    setHeight(Counter::counterHeight);
 }
 
 void Job::onStart() {
     setWidth(450);
-    setHeight(Counter::counterHeight);
+    setHeight(Global::listHeight);
+    int w = getParentWidth();
+    setWidth(w);
     
     counter = make_shared<Counter>(&deciHours);
-    counter->setPos(300, 0);
+    counter->setPos(w - 60, 0);
     addChild(counter);
     
-    // up down button
-    auto down = make_shared<UpDownButton>(&deciHours, false);
-    down->setPos(250, (getHeight() - down->getHeight())/2);
-    addChild(down);
-    auto up = make_shared<UpDownButton>(&deciHours, true);
-    up->setPos(360, (getHeight() - down->getHeight())/2);
-    addChild(up);
-
     // memo button (hidden, show on hover)
     memoButton = make_shared<MemoButton>();
-    memoButton->setWidth(230);
+    memoButton->setWidth(getWidth() - Global::listHeight * 4);
     memoButton->setHeight(getHeight());
     ofAddListener(memoButton->clickedEvents, this, &Job::showMemoDialog);
     addChild(memoButton);
@@ -38,12 +26,13 @@ void Job::onStart() {
 }
 
 void Job::onDraw() {
+    ofDrawRectangle(0, 0, getWidth(), getHeight());
+
     ofSetColor(50);
-    font.drawString(name, 0, (Counter::counterHeight + font.getSize()) / 2);
+    Global::fontMain.drawString(name, 0, (Global::listHeight + Global::fontMain.getSize()) / 2);
     
     // メモ
-    float margin = 2;
-    memoFont.drawString(memo, 0, Counter::counterHeight + memoFont.getSize() + margin);
+    Global::fontSmall.drawString(memo, 0, Global::listHeight + Global::fontSmall.getSize() + memoMargin);
 }
 
 void Job::addCount(int dh) {
@@ -55,34 +44,14 @@ void Job::addMemo(string m) {
     memo += m;
 }
 
-void Job::loadFont() {
-    if (fontLoaded) return;
-    // load sans default font
-    int fontSize = Counter::counterHeight * 0.6;
-#ifdef TARGET_OS_MAC
-    ofTrueTypeFontSettings settings("ヒラギノ角ゴシック", fontSize);
-#else
-    ofTrueTypeFontSettings settings(OF_TTF_SANS, fontSize);
-#endif
-    settings.addRanges(ofAlphabet::Latin);
-    settings.addRanges(ofAlphabet::Japanese);
-    font.load(settings);
-    
-    // メモ用のフォント 小さくしてロードする
-    settings.fontSize = 10;
-    memoFont.load(settings);
-    
-    fontLoaded = true;
-}
-
 void Job::updateHeight() {
     if (memo == "") {
-        setHeight(Counter::counterHeight);
+        setHeight(Global::listHeight);
     }
     else {
         // メモの文字数に合わせて高さを変える
-        auto rect = memoFont.getStringBoundingBox(memo, 0, 0);
-        setHeight(Counter::counterHeight + 10 + rect.height);
+        auto rect = Global::fontSmall.getStringBoundingBox(memo, 0, 0);
+        setHeight(Global::listHeight + memoMargin + rect.height);
     }
     
     // Jobの位置の再計算リクエスト

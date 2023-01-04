@@ -5,7 +5,16 @@ Nippo::Nippo() {
 }
 
 void Nippo::onStart() {
+    Global::prepare();
+    
+    setWidth(ofGetWidth());
+    setHeight(ofGetHeight());
+    
     jobList = make_shared<JobList>();
+    int margin = 6;
+    jobList->setWidth(getWidth() - margin * 2);
+    jobList->setHeight(getHeight());
+    jobList->setPos(margin, 50);
     addChild(jobList);
     
     // 設定ファイルが正常に読まれたとき
@@ -29,7 +38,23 @@ void Nippo::onUpdate() {
 }
 
 void Nippo::onDraw() {
-    
+    // 今日の日付
+    stringstream daystr;
+    string week = "";
+    switch (ofGetWeekday()) {
+        case 0: week = "日"; break;
+        case 1: week = "月"; break;
+        case 2: week = "火"; break;
+        case 3: week = "水"; break;
+        case 4: week = "木"; break;
+        case 5: week = "金"; break;
+        case 6: week = "土"; break;
+        default: break;
+    }
+    daystr << ofGetYear() << "年 " << ofGetMonth() << "月 " << ofGetDay() << "日 (" << week << ")";
+    auto daystrrect = Global::fontMain.getStringBoundingBox(daystr.str(), 0, 0);
+    ofSetColor(100);
+    Global::fontMain.drawString(daystr.str(), (getWidth() - daystrrect.width) / 2, 4 + daystrrect.height);
 }
 
 void Nippo::onKeyPressed(ofKeyEventArgs &key) {

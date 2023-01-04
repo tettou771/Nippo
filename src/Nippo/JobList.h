@@ -24,11 +24,11 @@ public:
     string directory;
     int year, month, date;
     
-    // ファイルは年ごとに作られるので、年まであれば十分e
+    // ファイルは年ごとに作られるので、年まであれば十分
     string toPath(string dir, int year);
     
     vector<shared_ptr<Job> > jobs;
     
 private:
-    vector<string> weeks;
+    ofxCsvRow header;
 };

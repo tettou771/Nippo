@@ -23,15 +23,12 @@ public:
     
     // サイズ変更の通知をするためのイベント
     ofEvent<void> memoChangedEvents;
-    
-    static ofTrueTypeFont font, memoFont;
 private:
-    static bool fontLoaded;
-    static void loadFont();
     shared_ptr<Counter> counter;
     
     string memo;
     shared_ptr<MemoButton> memoButton;
+    const int memoMargin = 2;
     
     void updateHeight();
     
