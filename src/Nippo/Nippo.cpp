@@ -10,12 +10,21 @@ void Nippo::onStart() {
     setWidth(ofGetWidth());
     setHeight(ofGetHeight());
     
+    // リストのオブジェクト
     jobList = make_shared<JobList>();
     int margin = 6;
     jobList->setWidth(getWidth() - margin * 2);
     jobList->setHeight(getHeight());
     jobList->setPos(margin, 50);
     addChild(jobList);
+    
+    // ジョブ追加のボタン
+    auto addJobButton = make_shared<TextButton>("Add");
+    addJobButton->setWidth(Global::listHeight * 2);
+    addJobButton->setHeight(Global::listHeight);
+    addJobButton->setPos(margin, margin);
+    ofAddListener(addJobButton->clickedEvents, &(*jobList), &JobList::showNewJobDialog);
+    addChild(addJobButton);
     
     // 設定ファイルが正常に読まれたとき
     if (loadSettings()) {

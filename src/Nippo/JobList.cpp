@@ -32,9 +32,6 @@ void JobList::onDraw() {
 }
 
 void JobList::onKeyPressed(ofKeyEventArgs &key) {
-    if (key.key == OF_KEY_RETURN) {
-        showNewJobDialog();
-    }
 }
 
 string JobList::toPath(string dir, int year) {

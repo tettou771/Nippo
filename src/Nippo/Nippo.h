@@ -2,6 +2,7 @@
 #include "ofxComponentUI.h"
 #include "Job.h"
 #include "JobList.h"
+#include "TextButton.h"
 
 using namespace ofxComponent;
 
