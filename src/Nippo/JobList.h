@@ -43,4 +43,6 @@ private:
     ofxCsvRow header;
     
     bool isUruuDoshi(int y);
+    static bool isDate(string str);
+    static bool toDate(string str, int &year, int &month, int &day);
 };

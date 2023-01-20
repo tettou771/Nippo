@@ -296,7 +296,6 @@ void JobList::save() {
         
         // 3列目がジョブの累計時間
         // ただし、内部的にはdeciHoursの単位なので、10分の1して加算しなければならない
-        
         row.setFloat(2, job->getHours());
         
         // 4列目がmemo
@@ -317,12 +316,70 @@ void JobList::save() {
         newRow.setFloat(2, j->getHours());
         data.addRow(newRow);
     }
+        
+    // csvを日付順でソートする
+    auto sorter = [](const ofxCsvRow &l, const ofxCsvRow &r){
+        bool ld = isDate(l.getString(0));
+        bool rd = isDate(r.getString(0));
+        
+        // 両方とも有効な日付なら、日付順にする。
+        if (ld && rd) {
+            int y,m,d;
+            toDate(l.getString(0), y, m, d);
+            int lvalue = y*10000+m*100+d;
+            toDate(r.getString(0), y, m, d);
+            int rvalue = y*10000+m*100+d;
+            return lvalue < rvalue;
+        }
+        // 片方だけ有効な日付なら、日付のほうを後にする
+        else if (ld != rd) {
+            if (ld) return false;
+            else  return true;
+        }
+        // 両方日付でなければ、文字列順にする
+        else {
+            return l.getString(0) < r.getString(0);
+        }
+    };
+    vector<ofxCsvRow> &dd = data.getData();
+    sort(dd.begin(), dd.end(), sorter);
     
-    
-    
+    // 空行を削除
+    for (int i=0; i<dd.size(); ++i) {
+        if (dd[i].getString(0) == "") {
+            dd.erase(dd.begin() + i);
+            --i;
+        }
+    }
+
     data.save(toPath(directory, year));
 }
 
 bool JobList::isUruuDoshi(int y){
     return y%4==0 && (y%100!=0 || y%400==0);
+}
+
+bool JobList::isDate(string str) {
+    int y,m,d;
+    return toDate(str, y, m, d);
+}
+
+bool JobList::toDate(string str, int &year, int &month, int &day) {
+    bool succeeded = false;
+    auto splitted = ofSplitString(str, "/");
+    if (splitted.size() == 3) {
+        int y = ofToInt(splitted[0]);
+        int m = ofToInt(splitted[1]);
+        int d = ofToInt(splitted[2]);
+        if (0 < y && y < 10000
+            && 0 < m && m <= 12
+            && 0 < d && d <= 31) {
+            year = y;
+            month = m;
+            day = d;
+            succeeded = true;
+        }
+    }
+    
+    return succeeded;
 }
