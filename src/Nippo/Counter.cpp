@@ -1,28 +1,5 @@
 #include "Counter.h"
 
-void SymbolButton::onDrawNormal() {
-    ofSetColor(50);
-    drawSymbol();
-}
-
-void SymbolButton::onDrawHovered() {
-    ofSetColor(120);
-    drawSymbol();
-}
-
-void SymbolButton::onDrawPressed() {
-    ofSetColor(120);
-    drawSymbol();
-}
-
-void SymbolButton::drawSymbol() {
-    ofPushMatrix();
-    ofScale(getWidth(), getHeight());
-    ofFill();
-    symbol.draw();
-    ofPopMatrix();
-}
-
 Counter::Counter(int *dhPtr) {
     deciHoursPtr = dhPtr;
 }
@@ -36,7 +13,11 @@ void Counter::onStart() {
     setPos(p);
 
     // up down button
-    auto down = make_shared<DownButton>();
+    auto down = make_shared<SymbolButton>();
+    // ボタンの形の定義
+    down->symbol.addVertex(ofVec3f(0, 0));
+    down->symbol.addVertex(ofVec3f(1, 0));
+    down->symbol.addVertex(ofVec3f(0.5, 1));
     // 左端、高さ中央
     down->setWidth(btnSize);
     down->setHeight(btnSize);
@@ -44,7 +25,11 @@ void Counter::onStart() {
     ofAddListener(down->clickedEvents, this, &Counter::onDownPressed);
     addChild(down);
 
-    auto up = make_shared<UpButton>();
+    auto up = make_shared<SymbolButton>();
+    // ボタンの形の定義
+    up->symbol.addVertex(ofVec3f(0, 1));
+    up->symbol.addVertex(ofVec3f(1, 1));
+    up->symbol.addVertex(ofVec3f(0.5, 0));
     // 右端、高さ中央
     up->setWidth(btnSize);
     up->setHeight(btnSize);

@@ -17,18 +17,31 @@ public:
     void hoursChanged();
     void memoChanged();
     void updateJobPositions();
-    void load(string dir, int year, int month, int date);
+    void setDirectory(string dir);
+    void load(int year, int month, int day);
+    void loadToday(); // 最初にこれを呼ばないと、laodPreviousDayなどはうまく機能しない
+    void loadPreviousDay();
+    void loadNextDay();
     void save();
     
     ofxCsv data;
     string directory;
-    int year, month, date;
+    int year, month, day, weekday;
     
     // ファイルは年ごとに作られるので、年まであれば十分
     string toPath(string dir, int year);
     
     vector<shared_ptr<Job> > jobs;
     
+    // 日付が変更されたときのイベント
+    struct DayChangedEventArgs {
+        DayChangedEventArgs(int y, int m, int d) : year(y), month(m), day(d){}
+        int year, month, day;
+    };
+    ofEvent<DayChangedEventArgs> dayChangedEvent;
+    
 private:
     ofxCsvRow header;
+    
+    bool isUruuDoshi(int y);
 };

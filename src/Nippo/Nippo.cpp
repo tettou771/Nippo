@@ -18,14 +18,36 @@ void Nippo::onStart() {
     jobList->setPos(margin, 50);
     addChild(jobList);
     
+    // 色々なボタンのサイズ
+    float buttonSize = Global::listHeight * 0.8;
+    
     // ジョブ追加のボタン
     auto addJobButton = make_shared<TextButton>("Add");
-    addJobButton->setWidth(Global::listHeight * 2);
-    addJobButton->setHeight(Global::listHeight);
+    addJobButton->setWidth(buttonSize * 2);
+    addJobButton->setHeight(buttonSize);
     addJobButton->setPos(margin, margin);
     ofAddListener(addJobButton->clickedEvents, &(*jobList), &JobList::showNewJobDialog);
     addChild(addJobButton);
     
+    // 日付変更のボタン
+    auto previousDayButton = make_shared<SymbolButton>();
+    previousDayButton->symbol.addVertex(ofVec3f(1, 0));
+    previousDayButton->symbol.addVertex(ofVec3f(1, 1));
+    previousDayButton->symbol.addVertex(ofVec3f(0, 0.5));
+    previousDayButton->setRect(ofRectangle(margin + 50, margin, buttonSize, buttonSize));
+    previousDayButton->normalColor = ofColor(100);
+    ofAddListener(previousDayButton->clickedEvents, jobList.get(), &JobList::loadPreviousDay);
+    addChild(previousDayButton);
+
+    auto nextDayButton = make_shared<SymbolButton>();
+    nextDayButton->symbol.addVertex(ofVec3f(0, 0));
+    nextDayButton->symbol.addVertex(ofVec3f(0, 1));
+    nextDayButton->symbol.addVertex(ofVec3f(1, 0.5));
+    nextDayButton->setRect(ofRectangle(getWidth() - (margin + 50 + buttonSize), margin, buttonSize, buttonSize));
+    nextDayButton->normalColor = ofColor(100);
+    ofAddListener(nextDayButton->clickedEvents, jobList.get(), &JobList::loadNextDay);
+    addChild(nextDayButton);
+
     // 設定ファイルが正常に読まれたとき
     if (loadSettings()) {
     }
@@ -39,7 +61,8 @@ void Nippo::onStart() {
         // フォルダ指定されたら、そのディレクトリで実行
     }
     
-    jobList->load(directory, ofGetYear(), ofGetMonth(), ofGetDay());
+    jobList->setDirectory(directory);
+    jobList->loadToday();
 }
 
 void Nippo::onUpdate() {
@@ -50,7 +73,7 @@ void Nippo::onDraw() {
     // 今日の日付
     stringstream daystr;
     string week = "";
-    switch (ofGetWeekday()) {
+    switch (jobList->weekday) {
         case 0: week = "日"; break;
         case 1: week = "月"; break;
         case 2: week = "火"; break;
@@ -60,7 +83,7 @@ void Nippo::onDraw() {
         case 6: week = "土"; break;
         default: break;
     }
-    daystr << ofGetYear() << "年 " << ofGetMonth() << "月 " << ofGetDay() << "日 (" << week << ")";
+    daystr << jobList->year << "年 " << jobList->month << "月 " << jobList->day << "日 (" << week << ")";
     auto daystrrect = Global::fontMain.getStringBoundingBox(daystr.str(), 0, 0);
     ofSetColor(100);
     Global::fontMain.drawString(daystr.str(), (getWidth() - daystrrect.width) / 2, 4 + daystrrect.height);
@@ -70,7 +93,7 @@ void Nippo::onKeyPressed(ofKeyEventArgs &key) {
     if (key.key == ' ') {
         bool b = showFolderDialog();
         if (b) {
-            jobList->load(directory, ofGetYear(), ofGetMonth(), ofGetDay());
+            jobList->loadToday();
             saveSettings();
         }
     }

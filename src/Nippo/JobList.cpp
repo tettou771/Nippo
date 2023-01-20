@@ -76,15 +76,18 @@ void JobList::updateJobPositions() {
     }
 }
 
-void JobList::load(string dir, int year, int month, int date) {
-    string filePath = toPath(dir, year);
+void JobList::setDirectory(string dir) {
+    directory = dir;
+}
+
+void JobList::load(int year, int month, int day) {
+    string filePath = toPath(directory, year);
     ofLogNotice("JobList") << "Load job file " << filePath;
     
     data.load(filePath);
-    this->directory = dir;
     this->year = year;
     this->month = month;
-    this->date = date;
+    this->day = day;
     
     // 一旦全てのジョブを破棄
     for (auto job : jobs) {
@@ -109,7 +112,7 @@ void JobList::load(string dir, int year, int month, int date) {
             int rowDate = ofToInt(splited[2]);
             
             // 日付を判定
-            if (rowYear == year && rowMonth == month && rowDate == date) {
+            if (rowYear == year && rowMonth == month && rowDate == day) {
                 isToday = true;
             }
         }
@@ -164,6 +167,71 @@ void JobList::load(string dir, int year, int month, int date) {
     }
     
     updateJobPositions();
+    
+    // 日付変更イベント
+    DayChangedEventArgs args(year, month, day);
+    ofNotifyEvent(dayChangedEvent, args);
+}
+
+void JobList::loadToday() {
+    weekday = ofGetWeekday();
+    load(ofGetYear(), ofGetMonth(), ofGetDay());
+}
+
+void JobList::loadPreviousDay(){
+    day--;
+    if (day == 0) {
+        month--;
+        if (month == 0) {
+            year--;
+            month = 12;
+        }
+        switch (month) {
+            case 2:
+                if (isUruuDoshi(year)) day = 29;
+                else day = 28;
+                break;
+            case 4:case 6:case 9:case 11:
+                day = 30;
+                break;
+            default:
+                day = 31;
+                break;
+        }
+    }
+
+    weekday--;
+    if (weekday == 0) weekday = 6;
+
+    load(year, month, day);
+}
+
+void JobList::loadNextDay(){
+    int maxDay = 31;
+    switch (month) {
+        case 2:
+            if (isUruuDoshi(year)) maxDay = 29;
+            else maxDay = 28;
+            break;
+        case 4:case 6:case 9:case 11:
+            maxDay = 30;
+            break;
+        default:
+            maxDay = 31;
+            break;
+    }
+    
+    day++;
+    if (day > maxDay) {
+        month++;
+        if (month > 12) year++;
+    }
+    
+    weekday++;
+    if (weekday == 6) weekday = 0;
+    
+    load(year, month, day);
+    
 }
 
 void JobList::save() {
@@ -192,7 +260,7 @@ void JobList::save() {
             int rowDate = ofToInt(splited[2]);
             
             // 日付を判定
-            if (rowYear == year && rowMonth == month && rowDate == date) {
+            if (rowYear == year && rowMonth == month && rowDate == day) {
                 isToday = true;
             }
         }
@@ -246,4 +314,8 @@ void JobList::save() {
     }
     
     data.save(toPath(directory, year));
+}
+
+bool JobList::isUruuDoshi(int y){
+    return y%4==0 && (y%100!=0 || y%400==0);
 }
