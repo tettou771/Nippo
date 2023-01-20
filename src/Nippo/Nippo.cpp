@@ -15,7 +15,8 @@ void Nippo::onStart() {
     int margin = 6;
     jobList->setWidth(getWidth() - margin * 2);
     jobList->setHeight(getHeight());
-    jobList->setPos(margin, 50);
+    jobList->setPos(margin, 44);
+    ofAddListener(jobList->dayChangedEvent, this, &Nippo::onDayChanged);
     addChild(jobList);
     
     // 色々なボタンのサイズ
@@ -29,13 +30,27 @@ void Nippo::onStart() {
     ofAddListener(addJobButton->clickedEvents, &(*jobList), &JobList::showNewJobDialog);
     addChild(addJobButton);
     
+    // 日付ボタン
+    // クリックすると今日がロードされる
+    int dayButtonWidth = 240;
+    dayButton = make_shared<TextButton>();
+    dayButton->setWidth(dayButtonWidth);
+    dayButton->setHeight(buttonSize);
+    dayButton->setCenterPos(getWidth()/2, margin + buttonSize/2);
+    dayButton->bgColor = ofColor(0, 0);
+    dayButton->textColor = ofColor(100);
+    ofAddListener(dayButton->clickedEvents, jobList.get(), &JobList::loadToday);
+    addChild(dayButton);
+
     // 日付変更のボタン
     auto previousDayButton = make_shared<SymbolButton>();
     previousDayButton->symbol.addVertex(ofVec3f(1, 0));
     previousDayButton->symbol.addVertex(ofVec3f(1, 1));
     previousDayButton->symbol.addVertex(ofVec3f(0, 0.5));
-    previousDayButton->setRect(ofRectangle(margin + 50, margin, buttonSize, buttonSize));
-    previousDayButton->normalColor = ofColor(100);
+    previousDayButton->setWidth(buttonSize);
+    previousDayButton->setHeight(buttonSize);
+    previousDayButton->setCenterPos((getWidth() - dayButtonWidth - buttonSize) / 2 - 4, margin + buttonSize/2);
+    previousDayButton->color = ofColor(100);
     ofAddListener(previousDayButton->clickedEvents, jobList.get(), &JobList::loadPreviousDay);
     addChild(previousDayButton);
 
@@ -43,11 +58,13 @@ void Nippo::onStart() {
     nextDayButton->symbol.addVertex(ofVec3f(0, 0));
     nextDayButton->symbol.addVertex(ofVec3f(0, 1));
     nextDayButton->symbol.addVertex(ofVec3f(1, 0.5));
-    nextDayButton->setRect(ofRectangle(getWidth() - (margin + 50 + buttonSize), margin, buttonSize, buttonSize));
-    nextDayButton->normalColor = ofColor(100);
+    nextDayButton->setWidth(buttonSize);
+    nextDayButton->setHeight(buttonSize);
+    nextDayButton->setCenterPos((getWidth() + dayButtonWidth + buttonSize) / 2 + 4, margin + buttonSize/2);
+    nextDayButton->color = ofColor(100);
     ofAddListener(nextDayButton->clickedEvents, jobList.get(), &JobList::loadNextDay);
     addChild(nextDayButton);
-
+    
     // 設定ファイルが正常に読まれたとき
     if (loadSettings()) {
     }
@@ -70,6 +87,22 @@ void Nippo::onUpdate() {
 }
 
 void Nippo::onDraw() {
+}
+
+void Nippo::onKeyPressed(ofKeyEventArgs &key) {
+    if (key.key == ' ') {
+        bool b = showFolderDialog();
+        if (b) {
+            jobList->loadToday();
+            saveSettings();
+        }
+    }
+}
+
+void Nippo::onMouseReleased(ofMouseEventArgs &mouse) {
+}
+
+void Nippo::onDayChanged(JobList::DayChangedEventArgs &args) {    
     // 今日の日付
     stringstream daystr;
     string week = "";
@@ -85,22 +118,7 @@ void Nippo::onDraw() {
     }
     daystr << jobList->year << "年 " << jobList->month << "月 " << jobList->day << "日 (" << week << ")";
     auto daystrrect = Global::fontMain.getStringBoundingBox(daystr.str(), 0, 0);
-    ofSetColor(100);
-    Global::fontMain.drawString(daystr.str(), (getWidth() - daystrrect.width) / 2, 4 + daystrrect.height);
-}
-
-void Nippo::onKeyPressed(ofKeyEventArgs &key) {
-    if (key.key == ' ') {
-        bool b = showFolderDialog();
-        if (b) {
-            jobList->loadToday();
-            saveSettings();
-        }
-    }
-}
-
-void Nippo::onMouseReleased(ofMouseEventArgs &mouse) {
-    jobList->save();
+    dayButton->setText(daystr.str());
 }
 
 bool Nippo::showFolderDialog() {

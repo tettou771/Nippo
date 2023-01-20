@@ -12,6 +12,9 @@ public:
     
     void setText(string txt);
     string getText();
+    
+    ofColor bgColor, textColor;
+    
 private:
     void drawSymbol();
     string text;

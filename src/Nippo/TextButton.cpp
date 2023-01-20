@@ -2,20 +2,22 @@
 
 TextButton::TextButton(string text) {
     setText(text);
+    bgColor = ofColor(50);
+    textColor = ofColor(255);
 }
 
 void TextButton::onDrawNormal() {
-    ofSetColor(120);
+    ofSetColor(bgColor);
     drawSymbol();
 }
 
 void TextButton::onDrawHovered() {
-    ofSetColor(180);
+    ofSetColor(bgColor, bgColor.a * 0.5);
     drawSymbol();
 }
 
 void TextButton::onDrawPressed() {
-    ofSetColor(180);
+    ofSetColor(bgColor, bgColor.a * 0.5);
     drawSymbol();
 }
 
@@ -27,6 +29,6 @@ void TextButton::setText(string txt) {
 void TextButton::drawSymbol() {
     ofDrawRectangle(0, 0, getWidth(), getHeight());
     
-    ofSetColor(255);
+    ofSetColor(textColor);
     Global::fontMain.drawString(text, (getWidth() - bb.width) / 2 - bb.x, (getHeight() - bb.height) / 2 - bb.y);
 }

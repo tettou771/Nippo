@@ -15,7 +15,7 @@ public:
     // symbolは0-1の正規化された次元になっていて、Componentのサイズにフィットするように描画される
     ofMesh symbol;
     
-    ofColor normalColor, hoveredColor, pressedColor;
+    ofColor color;
     
 protected:
     void drawSymbol();

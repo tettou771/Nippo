@@ -1,14 +1,14 @@
 #include "JobList.h"
 
 JobList::JobList(){
-    
-}
-
-void JobList::onStart(){
     header.setString(0, "day");
     header.setString(1, "job");
     header.setString(2, "hours");
     header.setString(3, "memo");
+
+}
+
+void JobList::onStart(){
 }
 
 void JobList::onDraw() {
@@ -48,23 +48,13 @@ void JobList::showNewJobDialog() {
     if (result.length() > 1) {
         // ジョブを追加する
         auto newJob = make_shared<Job>(result);
-        ofAddListener(newJob->memoChangedEvents, this, &JobList::memoChanged);
+        ofAddListener(newJob->dataChangedEvents, this, &JobList::onDataChanged);
         jobs.insert(jobs.begin(), newJob);
         updateJobPositions();
         addChild(newJob);
     }
     
     string newJobName = "";
-}
-
-void JobList::hoursChanged() {
-    save();
-}
-
-void JobList::memoChanged() {
-    updateJobPositions();
-    // メモが書き変わったので保存
-    save();
 }
 
 void JobList::updateJobPositions() {
@@ -147,16 +137,16 @@ void JobList::load(int year, int month, int day) {
         
         // なければジョブを追加
         if (!jobExists) {
-            shared_ptr<Job> newJob = make_shared<Job>(jobName);
-            ofAddListener(newJob->memoChangedEvents, this, &JobList::memoChanged);
-            
             // 今日ならそのジョブにdeciHoursを加算,メモ追加
+            int dh = 0;
+            string memo = "";
             if (isToday) {
-                newJob->addCount(jobDeciHours);
-                newJob->addMemo(jobMemo);
+                dh = jobDeciHours;
+                memo = jobMemo;
             }
-            
-            addChild(newJob);
+            shared_ptr<Job> newJob = make_shared<Job>(jobName, dh, memo);
+            ofAddListener(newJob->dataChangedEvents, this, &JobList::onDataChanged);
+                        
             jobs.push_back(newJob);
         }
     }
@@ -166,9 +156,18 @@ void JobList::load(int year, int month, int day) {
         data.insertRow(0, header);
     }
     
+    // ジョブの並べ替え
+    auto sorter = [](shared_ptr<Job> const l, shared_ptr<Job> const r){
+        return l->getDeciHours() > r->getDeciHours();
+    };
+    sort(jobs.begin(), jobs.end(), sorter);
+    for (auto j : jobs) {
+        addChild(j);
+    }
     updateJobPositions();
     
     // 日付変更イベント
+    // 時計を表示するため
     DayChangedEventArgs args(year, month, day);
     ofNotifyEvent(dayChangedEvent, args);
 }
@@ -232,6 +231,12 @@ void JobList::loadNextDay(){
     
     load(year, month, day);
     
+}
+
+void JobList::onDataChanged() {
+    ofLogNotice("JobList") << "onDataChanged()";
+    updateJobPositions();
+    save();
 }
 
 void JobList::save() {
@@ -304,14 +309,16 @@ void JobList::save() {
         if (j->deciHours == 0 && j->getMemo() == "") continue;
         
         ofxCsvRow newRow;
-        string todayString = ofToString(ofGetYear(), 4, '0')
-        + '/' + ofToString(ofGetMonth(), 2, '0')
-        + '/' + ofToString(ofGetDay(), 2, '0');
+        string todayString = ofToString(year, 4, '0')
+        + '/' + ofToString(month, 2, '0')
+        + '/' + ofToString(day, 2, '0');
         newRow.setString(0, todayString);
         newRow.setString(1, j->name);
         newRow.setFloat(2, j->getHours());
         data.addRow(newRow);
     }
+    
+    
     
     data.save(toPath(directory, year));
 }

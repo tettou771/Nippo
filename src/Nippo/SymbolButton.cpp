@@ -1,22 +1,21 @@
 #include "SymbolButton.h"
 
 SymbolButton::SymbolButton (){
-    normalColor = ofColor(50);
-    hoveredColor = pressedColor = ofColor(150);
+    color = ofColor(50);
 }
 
 void SymbolButton::onDrawNormal() {
-    ofSetColor(normalColor);
+    ofSetColor(color);
     drawSymbol();
 }
 
 void SymbolButton::onDrawHovered() {
-    ofSetColor(hoveredColor);
+    ofSetColor(color, color.a * 0.5);
     drawSymbol();
 }
 
 void SymbolButton::onDrawPressed() {
-    ofSetColor(pressedColor);
+    ofSetColor(color, color.a * 0.5);
     drawSymbol();
 }
 

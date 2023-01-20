@@ -14,14 +14,13 @@ public:
     void onKeyPressed(ofKeyEventArgs &key) override;
 
     void showNewJobDialog();
-    void hoursChanged();
-    void memoChanged();
     void updateJobPositions();
     void setDirectory(string dir);
     void load(int year, int month, int day);
     void loadToday(); // 最初にこれを呼ばないと、laodPreviousDayなどはうまく機能しない
     void loadPreviousDay();
     void loadNextDay();
+    void onDataChanged();
     void save();
     
     ofxCsv data;

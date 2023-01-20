@@ -16,6 +16,8 @@ public:
     void onDraw() override;
     void onKeyPressed(ofKeyEventArgs &key) override;
     void onMouseReleased(ofMouseEventArgs &mouse) override;
+    
+    void onDayChanged(JobList::DayChangedEventArgs& args);
 
 private:
     bool showFolderDialog();
@@ -27,5 +29,6 @@ private:
     // csv file dir
     string directory;
     
+    shared_ptr<TextButton> dayButton;
     shared_ptr<JobList> jobList;
 };

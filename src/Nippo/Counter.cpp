@@ -1,7 +1,6 @@
 #include "Counter.h"
 
-Counter::Counter(int *dhPtr) {
-    deciHoursPtr = dhPtr;
+Counter::Counter() {
 }
 
 void Counter::onStart() {
@@ -46,7 +45,7 @@ void Counter::onDraw() {
     else ofSetColor(50);
     
     // 時間の数値を書く
-    string txt = ofToString(float(*deciHoursPtr) / 10, 1);
+    string txt = ofToString(float(deciHours) / 10, 1);
     auto rect = Global::fontNumber.getStringBoundingBox(txt, 0, 0);
     Global::fontNumber.drawString(txt, (getWidth() - rect.width) / 2, (getHeight() + rect.height) / 2);
 }
@@ -67,12 +66,12 @@ void Counter::onMouseReleased(ofMouseEventArgs &mouse) {
     isDragging = false;
 }
 
+void Counter::setDeciHours(const int &dh) {
+    deciHours = dh;
+}
+
 void Counter::nudgeHours(int value) {
-    *deciHoursPtr += value;
-    
-    // 値を制限
-    if (*deciHoursPtr < 0) *deciHoursPtr = 0;
-    if (*deciHoursPtr > 240) *deciHoursPtr = 240;
+    ofNotifyEvent(counterEvent, value);
 }
 
 void Counter::onUpPressed() {

@@ -1,8 +1,10 @@
 #include "Job.h"
 
-Job::Job(string name){
+Job::Job(string name, int dh, string memo){
     this->name = name;
-    deciHours = 0;
+    this->deciHours = dh;
+    this->memo = memo;
+    updateHeight();
 }
 
 void Job::onStart() {
@@ -11,8 +13,10 @@ void Job::onStart() {
     int w = getParentWidth();
     setWidth(w);
     
-    counter = make_shared<Counter>(&deciHours);
+    counter = make_shared<Counter>();
     counter->setPos(w - 60, 0);
+    counter->setDeciHours(deciHours);
+    ofAddListener(counter->counterEvent, this, &Job::addCount);
     addChild(counter);
     
     // memo button (hidden, show on hover)
@@ -32,16 +36,26 @@ void Job::onDraw() {
     Global::fontMain.drawString(name, 0, (Global::listHeight + Global::fontMain.getSize()) / 2);
     
     // メモ
-    Global::fontSmall.drawString(memo, 0, Global::listHeight + Global::fontSmall.getSize() + memoMargin);
+    if (memo != "") {
+        Global::fontSmall.drawString(memo, 0, Global::listHeight + Global::fontSmall.getSize() + memoMargin);
+    }
 }
 
-void Job::addCount(int dh) {
+void Job::addCount(int &dh) {
     deciHours += dh;
+    if (deciHours < 0) deciHours = 0;
+    if (deciHours > 240) deciHours = 240;
+    
+    if (counter) counter->setDeciHours(deciHours);
+    
+    ofNotifyEvent(dataChangedEvents);
 }
 
 void Job::addMemo(string m) {
     if (memo != "") memo += '\n';
     memo += m;
+    updateHeight();
+    ofNotifyEvent(dataChangedEvents);
 }
 
 void Job::updateHeight() {
@@ -53,18 +67,12 @@ void Job::updateHeight() {
         auto rect = Global::fontSmall.getStringBoundingBox(memo, 0, 0);
         setHeight(Global::listHeight + memoMargin + rect.height);
     }
-    
-    // Jobの位置の再計算リクエスト
-    ofNotifyEvent(memoChangedEvents);
 }
 
 void Job::showMemoDialog() {
     auto result = ofSystemTextBoxDialog("メモを入力してください");
     if (result.length() > 1) {
         // メモを追加する
-        if (memo != "") memo += '\n';
-        memo += result;
-        
-        updateHeight();
+        addMemo(result);
     }
 }
