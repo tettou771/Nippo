@@ -200,7 +200,7 @@ void JobList::loadPreviousDay(){
     }
 
     weekday--;
-    if (weekday == 0) weekday = 6;
+    if (weekday < 0) weekday = 6;
 
     load(year, month, day);
 }
@@ -227,7 +227,7 @@ void JobList::loadNextDay(){
     }
     
     weekday++;
-    if (weekday == 6) weekday = 0;
+    if (weekday > 6) weekday = 0;
     
     load(year, month, day);
     
