@@ -18,6 +18,18 @@
 
 ジョブ名をクリックすると今日のメモが記入できます。メモはcsv上で毎日別のセルになるので翌日はアプリ上では消えます
 
+# Required Addons
+
+https://github.com/paulvollmer/ofxCsv
+
+https://github.com/tettou771/ofxFpsAutoReducer
+
+https://github.com/tettou771/ofxComponent
+
+https://github.com/tettou771/ofxComponentUI
+
+# 
+
 # Build
 
 openFrameworks 0.11.2 + Mac OS
