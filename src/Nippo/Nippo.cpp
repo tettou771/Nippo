@@ -108,13 +108,13 @@ void Nippo::onDayChanged(JobList::DayChangedEventArgs &args) {
     string week = "";
     switch (jobList->weekday) {
         case 0: week = "日"; break;
-        case 1: week = "月"; break;
+        case 1: week = "Mon"; break;
         case 2: week = "火"; break;
-        case 3: week = "水"; break;
-        case 4: week = "木"; break;
-        case 5: week = "金"; break;
-        case 6: week = "土"; break;
-        default: break;
+        case 3: week = "Wed"; break;
+        case 4: week = "Thu"; break;
+        case 5: week = "Fri"; break;
+        case 6: week = "Sat"; break;
+    default: break;
     }
     daystr << jobList->year << "年 " << jobList->month << "月 " << jobList->day << "日 (" << week << ")";
     auto daystrrect = Global::fontMain.getStringBoundingBox(daystr.str(), 0, 0);
@@ -176,8 +176,4 @@ bool Nippo::saveSettings() {
 
 void Nippo::setDirectory(string path) {
     directory = path;
-}
-
-bool Nippo::loadJob(int year, int month, int date) {
-    
 }

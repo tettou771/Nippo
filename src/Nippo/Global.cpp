@@ -9,6 +9,8 @@ void Global::prepare() {
     int fontSize = listHeight * 0.6;
 #ifdef TARGET_OS_MAC
     ofTrueTypeFontSettings settings("ヒラギノ角ゴシック", fontSize);
+#elif defined WIN32
+    ofTrueTypeFontSettings settings("Meiryo", fontSize);
 #else
     ofTrueTypeFontSettings settings(OF_TTF_SANS, fontSize);
 #endif

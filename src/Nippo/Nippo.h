@@ -24,7 +24,6 @@ private:
     bool loadSettings();
     bool saveSettings();
     void setDirectory(string path);
-    bool loadJob(int year, int month, int date);
     
     // csv file dir
     string directory;
